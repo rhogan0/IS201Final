@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wordle Clone</title>
+  <style>
+    body {
+      background-color: white;
+      color: #C71585;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    h1 {
+      font-size: 2em;
+    }
+
+    #game {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin: 20px auto;
+      max-width: 400px;
+    }
+
+    .tile {
+      width: 60px;
+      height: 60px;
+      border: 2px solid #C71585;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      text-transform: uppercase;
+    }
+
+    .correct {
+      background-color: #C71585;
+      color: white;
+    }
+
+    .present {
+      background-color: #f5a3c7;
+      color: white;
+    }
+
+    .absent {
+      background-color: #ddd;
+      color: #C71585;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1em;
+      text-transform: uppercase;
+      border: 2px solid #C71585;
+      color: #C71585;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      font-size: 1em;
+      border: none;
+      background-color: #C71585;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #a0126f;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Wordle Clone</h1>
+<div id="game"></div>
+<div>
+  <input type="text" id="guess" maxlength="5">
+  <button onclick="submitGuess()">Guess</button>
+</div>
+<p id="message"></p>
+
+<script>
+  const solution = "PLANT";
+  const maxGuesses = 6;
+  let currentRow = 0;
+
+  const gameContainer = document.getElementById("game");
+
+  // Initialize grid
+  for (let i = 0; i < maxGuesses * 5; i++) {
+    const tile = document.createElement("div");
+    tile.classList.add("tile");
+    gameContainer.appendChild(tile);
+  }
+
+  function submitGuess() {
+    const input = document.getElementById("guess");
+    const guess = input.value.toUpperCase();
+
+    if (guess.length !== 5) {
+      document.getElementById("message").textContent = "Enter a 5-letter word.";
+      return;
+    }
+
+    const rowStart = currentRow * 5;
+    const solutionLetters = solution.split("");
+    const guessLetters = guess.split("");
+
+    for (let i = 0; i < 5; i++) {
+      const tile = gameContainer.children[rowStart + i];
+      tile.textContent = guessLetters[i];
+
+      if (guessLetters[i] === solutionLetters[i]) {
+        tile.classList.add("correct");
+      } else if (solution.includes(guessLetters[i])) {
+        tile.classList.add("present");
+      } else {
+        tile.classList.add("absent");
+      }
+    }
+
+    currentRow++;
+    input.value = "";
+    document.getElementById("message").textContent = "";
+
+    if (guess === solution) {
+      document.getElementById("message").textContent = "🎉 You got it!";
+      document.getElementById("guess").disabled = true;
+    } else if (currentRow === maxGuesses) {
+      document.getElementById("message").textContent = `😢 Game over! The word was ${solution}.`;
+      document.getElementById("guess").disabled = true;
+    }
+  }
+
+  document.getElementById("guess").addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      submitGuess();
+    }
+  });
+</script>
+
+</body>
+</html>
